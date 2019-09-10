@@ -1,0 +1,4 @@
+# Project exclude paths
+/cs-common/target/
+/cs-consumer-spark/target/
+/cs-producer/target/

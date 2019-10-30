@@ -17,5 +17,4 @@ public class ProduceMain {
         productLog.init();
         productLog.writeLog("./cs-producer/callLog.csv" , productLog);
     }
-
 }

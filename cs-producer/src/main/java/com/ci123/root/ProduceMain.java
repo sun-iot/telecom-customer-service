@@ -15,6 +15,6 @@ public class ProduceMain {
     public static void main(String[] args) {
         ProductLog productLog = new ProductLog() ;
         productLog.init();
-        productLog.writeLog("./cs-producer/callLog.csv" , productLog);
+        productLog.writeLog("/opt/datas/call/calllog.csv" , productLog);
     }
 }

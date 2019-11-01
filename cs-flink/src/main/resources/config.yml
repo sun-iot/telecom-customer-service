@@ -1,0 +1,4 @@
+kafka:
+  bootstrap.server:
+    hadoop101,hadoop102,hadoop103:9092
+  

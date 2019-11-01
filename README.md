@@ -34,12 +34,19 @@
 >
 
 ## 消费者消费数据（均保存在HBase）
-
-### SparkStreaming消费Kafka数据
-
-
-
+我们是用Flink获取Kafka数据，并对数据分析处理. <br>
+Hbase作为数据存储，ElastaticSearch存储我们HBase的索引
 ### Flink消费Kafka数据
+
+1.HBaseUtil建表,预分区等
+
+2.HBaseDAO(保存数据的规则)
+
+3.消费者数据到HBase存储
+
+4.查询数据方式
+
+5.协处理数据
 
 
 

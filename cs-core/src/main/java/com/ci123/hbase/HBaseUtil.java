@@ -1,5 +1,6 @@
 package com.ci123.hbase;
 
+import com.jcraft.jsch.MAC;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -14,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Copyright (c) 2018-2028 Corp-ci All Rights Reserved
@@ -26,56 +29,49 @@ import java.util.List;
  */
 public class HBaseUtil {
     private static final Logger logger = LoggerFactory.getLogger(HBaseUtil.class);
-    private String zkUrl;
-    private Integer zkPort;
-    private Configuration configuration;
-    private Connection connection;
-    private HBaseAdmin admin;
+    private static  String zkUrl ;
+    private static  Integer zkPort;
+    private static  String masterUrl ;
+    private static Configuration configuration;
+    private static  ExecutorService executor ;
+    private static  Connection connection;
 
-    public void setZkUrl(String zkUrl) {
-        this.zkUrl = zkUrl;
-    }
 
-    public void setZkPort(Integer zkPort) {
-        this.zkPort = zkPort;
-    }
-
-    public static HBaseUtilBuilder create() {
-        return new HBaseUtilBuilder();
-    }
-
-    private void init() {
-        this.configuration = HBaseConfiguration.create();
-        this.configuration.set("hbase.zookeeper.quorm", this.zkUrl);
-        this.configuration.set("hbase.zookeeper.property.clientPort", String.valueOf(this.zkPort));
-
+    public HBaseUtil(String zkUrl , Integer zkPort , String masterUrl){
+        this.zkPort = zkPort ;
+        this.zkUrl = zkUrl ;
+        this.masterUrl = masterUrl ;
+        configuration = HBaseConfiguration.create();
+        configuration.set("hbase.zookeeper.quorum", zkUrl);
+        configuration.set("hbase.zookeeper.property.clientPort", String.valueOf(zkPort));
+        executor = Executors.newFixedThreadPool(32);
         try {
-            this.connection = ConnectionFactory.createConnection(configuration);
+            connection = ConnectionFactory.createConnection(configuration , executor);
         } catch (IOException e) {
             logger.error("HBase connect failed {}.", e.getMessage());
             e.printStackTrace();
         }
-        try {
-            this.admin = (HBaseAdmin) connection.getAdmin();
-        } catch (IOException e) {
-            logger.error("HBase admin failed {}.", e.getMessage());
-            e.printStackTrace();
-        }
-
     }
 
     /**
      * 判断 HBase中的表是否存在
-     *
      * @param tableName
      * @return true
      */
     public boolean isTableExit(String tableName) {
+        HBaseAdmin admin = null;
         try {
+            admin = (HBaseAdmin)connection.getAdmin();
             return admin.tableExists(tableName);
         } catch (IOException e) {
             logger.error("server connect failed {}", e.getMessage());
             return false;
+        }finally {
+            try {
+                admin.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -91,6 +87,7 @@ public class HBaseUtil {
             logger.info("the table is exit , nothing to do.");
             return false;
         } else {
+            HBaseAdmin admin = null ;
             // 创建表属性的对象，表名需要转字节
             HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf(tableName));
             // 创建多个列族
@@ -99,12 +96,19 @@ public class HBaseUtil {
             }
             // 根据表的配置，创建表
             try {
+                admin = (HBaseAdmin)connection.getAdmin();
                 admin.createTable(tableDescriptor);
                 logger.info("the table create successful");
                 return true;
             } catch (IOException e) {
                 logger.error("table create failed {}.", e.getMessage());
                 return false;
+            }finally {
+                try {
+                    admin.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -117,6 +121,7 @@ public class HBaseUtil {
      */
     public boolean deleteTable(String tableName) {
         if (isTableExit(tableName)) {
+            HBaseAdmin admin = null ;
             try {
                 admin.disableTable(tableName);
             } catch (IOException e) {
@@ -128,6 +133,12 @@ public class HBaseUtil {
             } catch (IOException e) {
                 logger.error("table delete failed {].", e.getMessage());
                 return false;
+            }finally {
+                try {
+                    admin.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             return true;
         } else {
@@ -328,26 +339,4 @@ public class HBaseUtil {
         }
     }
 
-    public static class HBaseUtilBuilder {
-        private HBaseUtil hBaseUtil;
-
-        public HBaseUtilBuilder() {
-            this.hBaseUtil = new HBaseUtil();
-        }
-
-        public HBaseUtilBuilder setZkUrl(String zkUrl) {
-            hBaseUtil.setZkUrl(zkUrl); ;
-            return this;
-        }
-
-        public HBaseUtilBuilder setzkPort(Integer zkPort) {
-            hBaseUtil.setZkPort(zkPort);
-            return this;
-        }
-
-        public HBaseUtil build() {
-            this.hBaseUtil.init();
-            return this.hBaseUtil;
-        }
-    }
 }

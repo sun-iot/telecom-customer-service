@@ -14,11 +14,10 @@ import com.ci123.hbase.HBaseUtil;
 public class Main {
 
     public static void main(String[] args) {
-        HBaseUtil build = HBaseUtil.create().setZkUrl("192.168.1.111,192.168.1.112.192.168.1.113")
-                .setzkPort(2181)
-                .build();
+        HBaseUtil hBaseUtil = new HBaseUtil("192.168.1.111", 2181, "192.168.1.111:16000");
 
-        boolean student = build.isTableExit("student");
-        System.out.println(student);
+        boolean table = hBaseUtil.createTable("user", "info");
+        System.out.println(table);
+
     }
 }

@@ -19,7 +19,7 @@
         <scala.version>2.11.11</scala.version>
         <log4j.version>1.2.17</log4j.version>
         <slf4j.version>1.7.22</slf4j.version>
-        <hbase.version>1.3.1</hbase.version>
+        <hbase.version>1.3.5</hbase.version>
     </properties>
     <dependencies>
         <!--此处放日志包，所有项目都要引用-->

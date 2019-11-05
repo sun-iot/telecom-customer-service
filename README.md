@@ -49,7 +49,6 @@ Hbase作为数据存储，ElastaticSearch存储我们HBase的索引
 5.协处理数据
 
 
-
 ### 直接读取Kafka数据
 
 

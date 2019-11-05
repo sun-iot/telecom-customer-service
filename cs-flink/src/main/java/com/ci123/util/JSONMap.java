@@ -1,7 +1,6 @@
 package com.ci123.util;
 
 import com.alibaba.fastjson.JSON;
-import com.ci123.bean.CallModule;
 import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.Field;
@@ -29,6 +28,12 @@ public class JSONMap {
         return JSON.toJSONString(o) ;
     }
 
+    /**
+     * 将一个对象转换成一个 Map
+     * @param o
+     * @return
+     * @throws IllegalAccessException
+     */
     public static Map<String,Object> jsonToMap(Object o) throws IllegalAccessException {
         Class<?> aClass = o.getClass();
         Map<String,Object> map = new HashMap<>();
@@ -57,15 +62,4 @@ public class JSONMap {
         return map ;
     }
 
-    public static void main(String[] args) {
-        CallModule callModule = new CallModule();
-        callModule.setNameA("callA");
-
-        try {
-            Map<String, Object> map = jsonToMap(callModule);
-            System.out.println(map.get("nameA"));
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 }

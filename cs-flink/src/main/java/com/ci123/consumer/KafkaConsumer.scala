@@ -3,10 +3,12 @@ package com.ci123.consumer
 import java.util.Properties
 
 import com.ci123.hbase.in.HBaseProcess
+import com.ci123.hbase.out.HBaseRead
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011
 import org.apache.flink.api.common.serialization.SimpleStringSchema
+import org.apache.flink.api.java.tuple
 
 /**
  * Copyright (c) 2018-2028 Corp-ci All Rights Reserved 
@@ -31,14 +33,9 @@ object KafkaConsumer {
     properties.setProperty("auto.offset.reset", "latest")
 
     val callData: DataStream[String] = environment.addSource(new FlinkKafkaConsumer011[String]( "call_data_collect" , new SimpleStringSchema() , properties))
-
-    callData.process(new HBaseProcess())
-
-
-    callData.print()
-
+    val qualifiers: Array[String] = Array[String]("phoneNumberA", "callA", "phoneNumberB", "callB", "dateTime", "timestamp", "duration")
+    callData.process(new HBaseProcess(qualifiers , "telecom-customer-service"))
     environment.execute()
-
   }
 
 }

@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Copyright (c) 2018-2028 Corp-ci All Rights Reserved
  * <p>
- * Project: corp-project
+ * Project: telecom-customer-service
  * Package: com.ci123.elasticsearch
  * Version: 1.0
  * <p>

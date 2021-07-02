@@ -13,7 +13,7 @@
     <properties>
         <flink.version>1.8.1</flink.version>
         <scala.version>2.12</scala.version>
-        <elasticsearch.version>6.6.0</elasticsearch.version>
+        <elasticsearch.version>6.8.15</elasticsearch.version>
     </properties>
 
     <dependencies>
